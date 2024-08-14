@@ -1,0 +1,57 @@
+import random
+import re
+from collections import defaultdict
+
+class MarkovChainGenerator:
+    def __init__(self, corpus, n=2):
+        self.n = n  # Quantidade de palavras a considerar para os estados da cadeia
+        self.model = self.build_markov_chain(corpus)
+
+    def build_markov_chain(self, corpus):
+        """
+        Constrói o modelo de cadeia de Markov a partir do corpus.
+
+        :param corpus: Texto base para construir o modelo
+        :return: Um dicionário representando a cadeia de Markov
+        """
+        model = defaultdict(list)
+        words = re.findall(r'\w+', corpus)
+
+        for i in range(len(words) - self.n):
+            key = tuple(words[i:i + self.n])
+            value = words[i + self.n]
+            model[key].append(value)
+
+        return model
+
+    def generate_text(self, length=50):
+        """
+        Gera texto baseado no modelo de cadeia de Markov.
+
+        :param length: Comprimento do texto gerado em número de palavras
+        :return: Texto gerado
+        """
+        start_index = random.randint(0, len(self.model) - 1)
+        current_words = list(random.choice(list(self.model.keys())))
+        generated_text = current_words[:]
+
+        for _ in range(length - self.n):
+            current_tuple = tuple(current_words[-self.n:])
+            next_word = random.choice(self.model.get(current_tuple, [""]))
+            generated_text.append(next_word)
+            current_words.append(next_word)
+
+        return ' '.join(generated_text)
+
+if __name__ == "__main__":
+    # Carregando um corpus de exemplo
+    corpus = """
+    Once upon a time, in a land far, far away, there was a kingdom where all the people lived happily. 
+    The king of this land was wise and just, and under his rule, the kingdom prospered.
+    """
+
+    generator = MarkovChainGenerator(corpus, n=2)
+    generated_text = generator.generate_text(length=50)
+
+    print("Texto gerado:")
+    print(generated_text)
