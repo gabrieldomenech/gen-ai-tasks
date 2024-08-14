@@ -1,0 +1,29 @@
+import openai
+
+# Substitua pela sua chave de API da OpenAI
+openai.api_key = 'sua-chave-de-api-aqui'
+
+def generate_text(prompt, max_tokens=50):
+    """
+    Gera texto baseado no prompt fornecido usando o modelo GPT da OpenAI.
+
+    :param prompt: Texto inicial para a geração
+    :param max_tokens: Número máximo de tokens a serem gerados
+    :return: Texto gerado
+    """
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=max_tokens,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+
+    return response.choices[0].text.strip()
+
+if __name__ == "__main__":
+    prompt = "Once upon a time"
+    generated_text = generate_text(prompt)
+
+    print(f"Texto gerado: {generated_text}")
