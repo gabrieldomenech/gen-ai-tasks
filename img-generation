@@ -1,0 +1,70 @@
+from PIL import Image
+
+# Mapeamento de pixels para caracteres ASCII
+ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
+
+def resize_image(image, new_width=100):
+    """
+    Redimensiona a imagem para a nova largura, mantendo a proporção.
+
+    :param image: Imagem a ser redimensionada
+    :param new_width: Nova largura da imagem
+    :return: Imagem redimensionada
+    """
+    width, height = image.size
+    ratio = height / width / 1.65
+    new_height = int(new_width * ratio)
+    resized_image = image.resize((new_width, new_height))
+    return resized_image
+
+def grayscale_image(image):
+    """
+    Converte a imagem para tons de cinza.
+
+    :param image: Imagem original
+    :return: Imagem em tons de cinza
+    """
+    return image.convert("L")
+
+def image_to_ascii(image, new_width=100):
+    """
+    Converte a imagem para arte ASCII.
+
+    :param image: Imagem original
+    :param new_width: Largura da arte ASCII
+    :return: String representando a arte ASCII
+    """
+    image = resize_image(image, new_width)
+    image = grayscale_image(image)
+    
+    pixels = image.getdata()
+    ascii_str = "".join([ASCII_CHARS[pixel // 25] for pixel in pixels])
+    
+    ascii_str_len = len(ascii_str)
+    ascii_img = "\n".join([ascii_str[index:(index + new_width)] for index in range(0, ascii_str_len, new_width)])
+    
+    return ascii_img
+
+def save_ascii_image(ascii_img, filename="ascii_image.txt"):
+    """
+    Salva a arte ASCII em um arquivo de texto.
+
+    :param ascii_img: String representando a arte ASCII
+    :param filename: Nome do arquivo onde a arte será salva
+    """
+    with open(filename, "w") as f:
+        f.write(ascii_img)
+
+if __name__ == "__main__":
+    # Caminho da imagem
+    path = input("Digite o caminho da imagem: ")
+
+    try:
+        image = Image.open(path)
+    except Exception as e:
+        print(e)
+        exit()
+
+    ascii_img = image_to_ascii(image)
+    save_ascii_image(ascii_img)
+    print("Arte ASCII gerada e salva como 'ascii_image.txt'!")
